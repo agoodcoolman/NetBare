@@ -3,5 +3,6 @@
 
     <string name="start_netbare">启动服务</string>
     <string name="stop_netbare">停止服务</string>
+    <string name="shua">开始刷吗</string>
 
 </resources>

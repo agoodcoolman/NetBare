@@ -6,15 +6,41 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/top"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="姐妹们，输入你的码，请先打开启动服务，然后去联通APP自己找个码邀请一次，这个是为了获取参数，只要自己手动运行一次就可以了。然后我就开始工作了。"/>
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/codes"
+        app:layout_constraintTop_toBottomOf="@id/top"
+        android:layout_width="match_parent"
+        android:layout_height="500px"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/logs"
+        app:layout_constraintTop_toBottomOf="@id/codes"
+        android:layout_width="match_parent"
+        android:layout_height="500px"/>
+
     <Button
         android:id="@+id/action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/start_netbare"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logs"/>
+
+    <Button
+        android:id="@+id/shuacode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shua"
+        android:textSize="20sp"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/logs"/>
 
 </android.support.constraint.ConstraintLayout>
