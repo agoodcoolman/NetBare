@@ -8,11 +8,13 @@ import com.github.megatronking.netbare.injector.SimpleHttpInjector
 import com.github.megatronking.netbare.io.HttpBodyInputStream
 import com.github.megatronking.netbare.stream.ByteStream
 import com.google.gson.JsonParser
+import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
 import java.io.Reader
 import java.io.StringReader
 import java.nio.ByteBuffer
+import java.util.regex.Pattern
 import java.util.zip.DeflaterOutputStream
 import java.util.zip.InflaterInputStream
 
@@ -31,6 +33,7 @@ class UnionInjector:SimpleHttpInjector( ){
 //            ShareUtils.setCookie(requestHeader[0])
 //            Log.i(WechatLocationInjector.TAG, "获取cookies");
 //        }
+
         val shouldInject = request.url().startsWith("https://m.client.10010.com/DoubleCard_Pro/static/doubleCard/actFriendHelp")
         // 自己的code 5lGgy9Z6R
         if (shouldInject) {
@@ -38,37 +41,34 @@ class UnionInjector:SimpleHttpInjector( ){
             val requestHeader = request.requestHeader("Cookie")
             ShareUtils.setCookie(requestHeader[0])
             Log.i(WechatLocationInjector.TAG, "获取cookies");
+            EventBus.getDefault().post("参数获取成功")
         }
         return shouldInject
     }
 
     override fun onRequestInject(request: HttpRequest, body: HttpBody, callback: InjectorCallback) {
         //        // 获取手机加密内容
+        EventBus.getDefault().post(UnionInjector::class.java)
         val params = String(body.toBuffer().array())
+        val matcher = Pattern.compile("(?<=encryptMobile=)(.+?)(?=&)").matcher(params)
+        if (matcher.find()) ShareUtils.setEncryptMobile(matcher.group(1))
+
 //      encryptMobile=7f1efd01973e0200752ea77a3e0715a8&invitationCode=4xa7Fd84t
         // 替换然后返回
         val replace = params.replace(params.split("=")[2], "5lGgy9Z6R")
         // 变成二进制
         val wrap = ByteBuffer.wrap(replace.toByteArray())
-//        callback.onFinished(ByteStream(replace.toByteArray()))
         // 用父类的调用下回调
         super.onRequestInject(request, HttpRawBody(wrap), callback)
     }
 
     override fun onRequestInject(header: HttpRequestHeaderPart, callback: InjectorCallback) {
-        val query = header.uri().query
+        // 不管输入是多少，要把请求头的内容的长度写成71，这是这个请求的。
         val injectHeader = header!!
                 .newBuilder()
                 .replaceHeader("Content-Length", "71")
                 .build()
-//        // 获取手机加密内容
-//        val encryptMobileParam = header.uri().getQueryParameter("encryptMobile")
-//        // 获取邀请码，然后用自己的反射注入进去
-//        val code = header.uri().getQueryParameter("invitationCode")
-//
-//        ShareUtils.setEncryptMobile(encryptMobileParam)
-//        header.uri().buildUpon()
-//        header.uri().path.replace(code, "5lGgy9Z6R")
+
         callback.onFinished(injectHeader)
     }
 

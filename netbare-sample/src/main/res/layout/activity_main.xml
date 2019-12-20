@@ -11,11 +11,12 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="姐妹们，输入你的码，请先打开启动服务，然后去联通APP自己找个码邀请一次，这个是为了获取参数，只要自己手动运行一次就可以了。然后我就开始工作了。"/>
+        android:text="@string/comment"/>
 
     <android.support.v7.widget.AppCompatEditText
         android:id="@+id/codes"
         app:layout_constraintTop_toBottomOf="@id/top"
+        android:hint="5lGgy9Z6R\n5lGgy9Z6R(像这样填，要分行)"
         android:layout_width="match_parent"
         android:layout_height="500px"/>
 

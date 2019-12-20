@@ -4,5 +4,8 @@
     <string name="start_netbare">启动服务</string>
     <string name="stop_netbare">停止服务</string>
     <string name="shua">开始刷吗</string>
-
+    <string name="comment">1.开启服务（如果已经获取参数，是没有开启服务按钮的）\r\n
+    2.打开联通APP，那个填入邀请码那个页面，你随便填点啥，点击帮TA拼图，我得话费或金币，获取参数\r\n
+    3.到刚装的APP下面。\r\n
+    4.重新打开，填入邀请码，开始刷，即可。</string>
 </resources>

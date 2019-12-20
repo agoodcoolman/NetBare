@@ -27,6 +27,9 @@
                 <action android:name="com.github.megatronking.netbare.action.Stop"/>
             </intent-filter>
         </service>
+        <service android:name=".WorkService">
+
+        </service>
     </application>
 
 </manifest>

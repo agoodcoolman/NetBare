@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.AppCompatTextView
 import android.text.TextUtils
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import com.github.megatronking.netbare.NetBare
@@ -16,6 +17,8 @@ import com.github.megatronking.netbare.http.HttpInjectInterceptor
 import com.github.megatronking.netbare.http.HttpInterceptorFactory
 import com.github.megatronking.netbare.ssl.JKS
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.io.IOException
 
 class MainActivity : AppCompatActivity(), NetBareListener {
@@ -32,17 +35,19 @@ class MainActivity : AppCompatActivity(), NetBareListener {
     private lateinit var codes: AppCompatEditText
 
     private lateinit var logs: AppCompatTextView
-
+    private var terminalString: StringBuilder = StringBuilder()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        EventBus.getDefault().register(this)
         mNetBare = NetBare.get()
 
         mActionButton = findViewById(R.id.action)
         shuacode = findViewById(R.id.shuacode)
         codes = findViewById(R.id.codes)
         logs = findViewById(R.id.logs)
+
+        controllerButtonVisiable()
         mActionButton.setOnClickListener {
             if (mNetBare.isActive) {
                 mNetBare.stop()
@@ -54,19 +59,25 @@ class MainActivity : AppCompatActivity(), NetBareListener {
             }
         }
         shuacode.setOnClickListener {
-            val codeLists = codes.text.toString().split("\n")
+            val codes = codes.text.toString().trim()
+            if (TextUtils.isEmpty(codes)) {
+                Toast.makeText(application, "请填入邀请码", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
             if (TextUtils.isEmpty(ShareUtils.getCookie())) {
                 Toast.makeText(application, "姐妹请点击开启服务，请去联通APP手动填入别人的邀请码，然后请求一下，然后我好获取你的参数", Toast.LENGTH_LONG).show()
             } else {
+                // 已经获取参数的话，就不要再去开启拦截了。直接关掉。
+               if (mNetBare.isActive) {
+                    mNetBare.stop()
+                }
+
+                val codeLists = codes.split("\n")
                 if (codeLists.size == 0) {
                     Toast.makeText(application, "请填入邀请码", Toast.LENGTH_LONG).show()
                 }
                 if (codeLists.size> 0) {
-                    if (!mNetBare.isActive) {
-                        Toast.makeText(application, "姐妹要先点击开启服务才行哦", Toast.LENGTH_LONG).show()
-                    } else{
-                        prepareNetBare()
-                    }
+                    // 这里已经有码，并且已经获取了用户的数据了
                     val intent = Intent()
 
                     intent.putStringArrayListExtra("list", ArrayList(codeLists))
@@ -74,22 +85,48 @@ class MainActivity : AppCompatActivity(), NetBareListener {
                     startService(intent)
                 }
             }
-
-
         }
 
         // 监听NetBare服务的启动和停止
         mNetBare.registerNetBareListener(this)
+    }
+    // 写log
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun showTerminal(content: String) {
+        terminalString.append(content)
+        logs.text = terminalString.toString()
+    }
+
+    // 控制按钮是否显示
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun show(clazz: Class<UnionInjector>) {
+        controllerButtonVisiable()
+    }
+
+    fun controllerButtonVisiable() {
+        if (TextUtils.isEmpty(ShareUtils.getCookie())) {
+            mActionButton.visibility = View.VISIBLE
+            shuacode.visibility = View.INVISIBLE
+        } else {
+            mActionButton.visibility = View.INVISIBLE
+            shuacode.visibility = View.VISIBLE
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mNetBare.unregisterNetBareListener(this)
         mNetBare.stop()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onStart() {
         super.onStart()
+
+    }
+
+    override fun onStop() {
+        super.onStop()
 
     }
     override fun onServiceStarted() {
