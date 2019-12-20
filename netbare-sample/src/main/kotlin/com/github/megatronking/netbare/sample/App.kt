@@ -5,6 +5,8 @@ import android.content.Context
 import com.github.megatronking.netbare.NetBare
 import com.github.megatronking.netbare.NetBareUtils
 import com.github.megatronking.netbare.ssl.JKS
+import com.tencent.bugly.Bugly
+import com.tencent.bugly.crashreport.CrashReport
 import me.weishu.reflection.Reflection
 
 class App : Application() {
@@ -30,6 +32,8 @@ class App : Application() {
 
         // 初始化NetBare
         NetBare.get().attachApplication(this, BuildConfig.DEBUG)
+
+        Bugly.init(getApplicationContext(), "7a0e2c4097", false);
     }
 
     fun getJSK(): JKS {
