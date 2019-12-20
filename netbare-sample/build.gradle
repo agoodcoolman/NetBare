@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.github.megatronking.netbare.sample"
+        applicationId "com.jin.union"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
